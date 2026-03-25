@@ -1,0 +1,13 @@
+<GenRoBag>
+  <db dbname="astro" implementation="postgres"/>
+  <packages>
+    <gnrcore_sys pkgcode="gnrcore:sys"/>
+    <gnrcore_adm pkgcode="gnrcore:adm"/>
+    <gnr_it_glbl pkgcode="gnr_it:glbl"/>
+    <astro/>
+  </packages>
+  <authentication pkg="adm">
+    <py_auth defaultTags="user" pkg="adm" method="authenticate"/>
+  </authentication>
+  <wsgi mainpackage="astro"/>
+</GenRoBag>
