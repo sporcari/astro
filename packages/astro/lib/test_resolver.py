@@ -5,11 +5,11 @@ Open Notify API endpoints (no auth required):
   - http://api.open-notify.org/astros.json   — people currently in space
 
 Run:
-    cd /Users/developer/sviluppo/genropy_projects/astro
-    PYTHONPATH=/Users/developer/sviluppo/genropy/gnrpy:packages python3 -m astro.lib.test_resolver
+    cd /Users/developer/sviluppo/genropy_projects/astro/packages/astro/lib
+    PYTHONPATH=/Users/developer/sviluppo/genropy/gnrpy python3 test_resolver.py
 """
 
-from astro.lib.resolvers import JsonRestResolver
+from resolvers import JsonRestResolver
 
 
 def test_iss_position():

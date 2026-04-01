@@ -6,7 +6,7 @@ Open Notify and NASA API integrations.
 
 Usage in RPC methods:
     from gnr.core.gnrbag import Bag
-    from astro.lib.resolvers import JsonRestResolver
+    from resolvers import JsonRestResolver
 
     resolver = JsonRestResolver('http://api.open-notify.org/iss-now.json',
                                 cacheTime=30)
@@ -65,3 +65,4 @@ class JsonRestResolver(BagResolver):
         result = Bag()
         result.fromJson(data)
         return result
+
