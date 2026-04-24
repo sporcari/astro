@@ -10,8 +10,9 @@ class GnrCustomWebPage(object):
     def main(self, root, **kwargs):
         bc = root.borderContainer(datapath='iss_tracker', padding='10px')
         bc.dataRpc('.position', self.get_iss_position,
-                   _timing=10, _onStart=True)
-        bc.dataRpc('.people', self.get_astronauts, _onStart=True)
+                   _timing=10, _onStart=True, _fired='^.refresh')
+        bc.dataRpc('.people', self.get_astronauts,
+                   _onStart=True,  _timing=10, _fired='^.refresh')
 
         top = bc.contentPane(region='top')
         eb = top.expandbox(title='ISS Position', open=True, animate=True)
@@ -20,6 +21,8 @@ class GnrCustomWebPage(object):
                    readOnly=True)
         fb.textbox(value='^.longitude', lbl='Longitudine',
                    readOnly=True)
+        fb.button('Refresh', action='FIRE iss_tracker.refresh;',
+                  iconClass='iconbox arrow_circle_right')
 
         center = bc.contentPane(region='center')
         eb2 = center.expandbox(title='Astronauts', open=True, animate=True,
