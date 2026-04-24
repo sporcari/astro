@@ -11,35 +11,51 @@ NEOWS_BASE = 'https://api.nasa.gov/neo/rest/v1'
 class GnrCustomWebPage(object):
 
     def main(self, root, **kwargs):
+        
         bc = root.borderContainer(datapath='main', padding='10px')
 
         top = bc.contentPane(region='top')
-        eb = top.expandbox(title='Search Near Earth Objects', open=True,
+        left = top.contentPane(region='center')
+        
+        eb = left.expandbox(title='Search Near Earth Objects', open=True,
                            animate=True)
-        fb = eb.formlet(datapath='.parameters', cols=3)
+        
+        fb = eb.formBuilder(datapath='.parameters', cols=2)
         fb.dateTextBox(value='^.start_date', lbl='Start Date', width='12em',
-                       period_to='.end_date')
-        fb.dateTextBox(value='^.end_date', lbl='End Date', width='12em')
+                       period_to='.end_date', colspan=0.5)
+        fb.dateTextBox(value='^.end_date', lbl='End Date', width='12em', colspan=0.5)
+        #slider // come mostro i valori dello slider? (si vedono a end_date però)
+        fb.horizontalSlider('^.period',lbl='1 Week margin',minimum=-7,maximum=7,
+                      discreteValues=15,width='75%',cols=3,
+                      intermediateChanges=True,
+                      tooltip="""Change the day-span used.""")
+        
         fb.dataController("""if (start_date && end_date){
                           if ((end_date - start_date) > 7*86400000){
                               var new_end_date = new Date(start_date.getTime() + 7*86400000);
                               this.setRelativeData('.end_date', new_end_date);
                               genro.dlg.alert('Date range limited to 7 days. End date adjusted.', 'Warning');
                           }
-                        }""",start_date='^.start_date',
-                        end_date='^.end_date')
+                        }
+                        if(start_date){
+                            var new_end_date = new Date(start_date.getTime() + period*86400000);
+                            this.setRelativeData('.end_date', new_end_date);
+                        }
+                        
+                        """,start_date='^.start_date',
+                        end_date='^.end_date',
+                        period='^.period')
         fb.button('Search', margin_top='5px').dataRpc(
                   'main.results', self.get_neo_feed,
                   start_date='=.start_date',
                   end_date='=.end_date',_lockScreen=True)
-
-
-
-        center = bc.contentPane(region='center')
-        eb2 = center.expandbox(title='Results', open=True, animate=True,
+        
+        topBottom = top.contentPane(region='bottom')
+        
+        eb2 = topBottom.expandbox(title='Results', open=True, animate=True,
                                height='100%')
         grid = eb2.quickGrid(value='^main.results', height='100%')
-        grid.column(name='Name', field='name', width='15em')
+        grid.column(name='Name', field='name', width='15em').checkbox()
         grid.column(name='Date', field='close_approach_date', width='8em')
         grid.column(name='Diameter (m)', field='diameter_min', width='8em',
                     dtype='N')
@@ -50,6 +66,13 @@ class GnrCustomWebPage(object):
         grid.column(name='Miss Distance (km)', field='miss_distance_km',
                     width='12em', dtype='N')
         grid.column(name='Hazardous', field='is_hazardous', width='6em')
+        
+        center = bc.contentPane(region='center', height='10%')
+        
+        eb3 = center.expandbox(title='idk pof', open=True,animate=True,
+                               height='100%')
+        grid2 = eb3.quickGrid(value='^main.results',height='100%')
+        
 
     def _get_api_key(self):
         return self.application.config['nasa?api_key'] or 'DEMO_KEY'
