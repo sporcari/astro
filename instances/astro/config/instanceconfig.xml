@@ -10,4 +10,5 @@
     <py_auth defaultTags="user" pkg="adm" method="authenticate"/>
   </authentication>
   <wsgi mainpackage="astro"/>
+  <nasa api_key="L4TWji9toZewuCdj4bojwh4ow8dfepHZrXbuKiJ8"/>
 </GenRoBag>
