@@ -10,5 +10,10 @@ class Package(GnrDboPackage):
     def config_db(self, pkg):
         pass
 
+    
+
 class Table(GnrDboTable):
-    pass
+    
+    def get_api_key(self):
+        return self.db.application.config['nasa?api_key'] or 'DEMO_KEY'
+

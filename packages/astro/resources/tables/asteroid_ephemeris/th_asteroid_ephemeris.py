@@ -7,8 +7,10 @@ from gnr.web.gnrbaseclasses import BaseComponent
 class View(BaseComponent):
     def th_struct(self, struct):
         r = struct.view().rows()
-        r.fieldcell('@asteroid_id.name', name='!!Asteroid', width='15em')
-        r.fieldcell('fetched_at', width='12em')
+        r.fieldcell('@fetch_id.@asteroid_id.name',
+                    name='!!Asteroid', width='15em')
+        r.fieldcell('@fetch_id.fetched_at',
+                    name='!!Fetched at', width='12em')
         r.fieldcell('epoch_jd', width='14em', format='#,###.#########')
         r.fieldcell('epoch_cal', width='18em')
         r.fieldcell('x', width='12em', format='#,###.000000')
@@ -20,15 +22,32 @@ class View(BaseComponent):
         r.fieldcell('light_time', width='8em', format='#,###.000')
         r.fieldcell('range_au', width='10em', format='#,###.000000')
         r.fieldcell('range_rate', width='10em', format='#,###.000000')
-        r.fieldcell('center', width='8em')
-        r.fieldcell('ref_system', width='6em')
-        r.fieldcell('out_units', width='6em')
 
     def th_order(self):
-        return 'fetched_at:d,epoch_jd:a'
+        return '@fetch_id.fetched_at desc,epoch_jd'
 
     def th_query(self):
-        return dict(column='@asteroid_id.name', op='contains', val='')
+        return dict(column='@fetch_id.@asteroid_id.name',
+                    op='contains', val='')
+
+
+class ViewFromFetch(BaseComponent):
+    def th_struct(self, struct):
+        r = struct.view().rows()
+        r.fieldcell('epoch_jd', width='14em', format='#,###.#########')
+        r.fieldcell('epoch_cal', width='18em')
+        r.fieldcell('x', width='12em', format='#,###.000000')
+        r.fieldcell('y', width='12em', format='#,###.000000')
+        r.fieldcell('z', width='12em', format='#,###.000000')
+        r.fieldcell('vx', width='10em', format='#,###.000000')
+        r.fieldcell('vy', width='10em', format='#,###.000000')
+        r.fieldcell('vz', width='10em', format='#,###.000000')
+        r.fieldcell('light_time', width='8em', format='#,###.000')
+        r.fieldcell('range_au', width='10em', format='#,###.000000')
+        r.fieldcell('range_rate', width='10em', format='#,###.000000')
+
+    def th_order(self):
+        return 'epoch_jd'
 
 
 class Form(BaseComponent):
@@ -38,10 +57,9 @@ class Form(BaseComponent):
                               padding='10px')
         fb = pane.formbuilder(cols=2, border_spacing='4px',
                               fld_width='100%')
-        fb.field('asteroid_id', colspan=2)
-        fb.field('fetched_at')
+        fb.field('fetch_id', colspan=2)
         fb.field('epoch_cal')
-        fb.field('epoch_jd', colspan=2)
+        fb.field('epoch_jd')
         fb.field('x')
         fb.field('y')
         fb.field('z')
@@ -51,9 +69,6 @@ class Form(BaseComponent):
         fb.field('light_time')
         fb.field('range_au')
         fb.field('range_rate')
-        fb.field('center')
-        fb.field('ref_system')
-        fb.field('out_units')
 
     def th_options(self):
-        return dict(dialog_height='600px', dialog_width='760px')
+        return dict(dialog_height='600px', dialog_width='720px')

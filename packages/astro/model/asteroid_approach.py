@@ -41,3 +41,41 @@ class Table(object):
         tbl.column('sampled_at', dtype='DHZ',
                    name_long='!!Sampled at')
         tbl.index('asteroid_id,sampled_at', unique=False)
+
+
+    def write_approach(self, asteroid_id=None, ap=None, sampled_at=None):
+        velocity = ap['relative_velocity']
+        miss = ap['miss_distance']
+        ap_date = ap['close_approach_date']
+        epoch = int(ap['epoch_date_close_approach']) if ap['epoch_date_close_approach'] else None
+        miss_km = float(miss['kilometers']) if miss else None
+        vel_kms = float(velocity['kilometers_per_second']) if velocity else None
+        if self._already_imported(asteroid_id, ap_date):
+            return
+            
+        self.insert(self.newrecord(
+            asteroid_id=asteroid_id,
+            close_approach_date=ap_date,
+            close_approach_date_full=ap['close_approach_date_full'],
+            epoch_date_close_approach=epoch,
+            relative_velocity_kms=vel_kms,
+            relative_velocity_kmh=float(velocity['kilometers_per_hour']) if velocity else None,
+            relative_velocity_mph=float(velocity['miles_per_hour']) if velocity else None,
+            miss_distance_astronomical=float(miss['astronomical']) if miss else None,
+            miss_distance_lunar=float(miss['lunar']) if miss else None,
+            miss_distance_km=miss_km,
+            miss_distance_miles=float(miss['miles']) if miss else None,
+            orbiting_body=ap['orbiting_body'],
+            sampled_at=sampled_at,
+        ))
+
+    def _already_imported(self, asteroid_id, ap_date):
+        last = self.query(
+            where='$asteroid_id=:aid AND $close_approach_date=:cad',
+            aid=asteroid_id, cad=ap_date,
+            columns='$epoch_date_close_approach,$miss_distance_km,$relative_velocity_kms',
+            order_by='$sampled_at desc', limit=1).fetch()
+        
+        if last:
+            return True
+        

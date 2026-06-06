@@ -8,10 +8,10 @@ class Table(object):
                         name_long='!!Asteroid ephemeris',
                         name_plural='!!Asteroid ephemerides')
         self.sysFields(tbl)
-        tbl.column('asteroid_id', size='22', group='_',
-                   name_long='!!Asteroid').relation(
-                       'asteroid.id',
-                       relation_name='ephemerides',
+        tbl.column('fetch_id', size='22', group='_',
+                   name_long='!!Fetch').relation(
+                       'asteroid_fetch.id',
+                       relation_name='points',
                        mode='foreignkey',
                        onDelete='cascade')
         tbl.column('epoch_jd', dtype='N', size='18,9',
@@ -30,15 +30,6 @@ class Table(object):
                    name_long='!!Range')
         tbl.column('range_rate', dtype='N',
                    name_long='!!Range rate')
-        tbl.column('center',
-                   name_long='!!Center')
-        tbl.column('ref_system',
-                   name_long='!!Reference system')
-        tbl.column('out_units',
-                   name_long='!!Units')
-        tbl.column('fetched_at', dtype='DHZ',
-                   name_long='!!Fetched at')
-        tbl.compositeColumn('ephem_point',
-                            columns='asteroid_id,epoch_jd,center,ref_system,out_units',
+        tbl.compositeColumn('fetch_point',
+                            columns='fetch_id,epoch_jd',
                             unique=True)
-        tbl.index('asteroid_id,epoch_jd', unique=False)

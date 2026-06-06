@@ -57,8 +57,6 @@ class GnrCustomWebPage(object):
                     width='12em', dtype='N')
         grid.column(name='Hazardous', field='is_hazardous', width='6em')
 
-    def _get_api_key(self):
-        return self.application.config['nasa?api_key'] or 'DEMO_KEY'
 
     @public_method
     def get_neo_feed(self, start_date=None, end_date=None, **kwargs):

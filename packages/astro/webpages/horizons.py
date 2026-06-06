@@ -122,9 +122,12 @@ class GnrCustomWebPage(object):
             result['error'] = 'No rows parsed from Horizons response'
             return result
 
-        fetched_at = datetime.now(timezone.utc)
-        self._persist(asteroid_id, rows, center, ref_system, out_units,
-                      fetched_at)
+        fetch_id = self._create_fetch(
+            asteroid_id=asteroid_id,
+            start_time=start_time, stop_time=stop_time,
+            step_value=step_value, step_unit=step_unit,
+            center=center, out_units=out_units, ref_system=ref_system)
+        self._persist(fetch_id, rows)
         self.db.commit()
 
         display = Bag()
@@ -162,20 +165,23 @@ class GnrCustomWebPage(object):
                 continue
         return rows
 
-    def _persist(self, asteroid_id, rows, center, ref_system, out_units,
-                 fetched_at):
+    def _create_fetch(self, asteroid_id, start_time, stop_time,
+                      step_value, step_unit, center, out_units, ref_system):
+        tbl = self.db.table('astro.asteroid_fetch')
+        rec = tbl.insert(tbl.newrecord(
+            asteroid_id=asteroid_id,
+            start_time=start_time,
+            stop_time=stop_time,
+            step_value=int(step_value) if step_value is not None else None,
+            step_unit=step_unit,
+            center=center,
+            out_units=out_units,
+            ref_system=ref_system,
+            fetched_at=datetime.now(timezone.utc),
+        ))
+        return rec['id']
+
+    def _persist(self, fetch_id, rows):
         tbl = self.db.table('astro.asteroid_ephemeris')
         for row in rows:
-            with tbl.recordToUpdate(asteroid_id=asteroid_id,
-                                    epoch_jd=row['epoch_jd'],
-                                    center=center,
-                                    ref_system=ref_system,
-                                    out_units=out_units,
-                                    insertMissing=True) as rec:
-                rec['asteroid_id'] = asteroid_id
-                rec['center'] = center
-                rec['ref_system'] = ref_system
-                rec['out_units'] = out_units
-                rec['fetched_at'] = fetched_at
-                for k, v in row.items():
-                    rec[k] = v
+            tbl.insert(tbl.newrecord(fetch_id=fetch_id, **row))
