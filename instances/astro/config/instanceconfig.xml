@@ -1,5 +1,5 @@
 <GenRoBag>
-  <db dbname="astro" implementation="postgres"/>
+  <db dbname="astro" implementation="postgres" host="localhost" port="5432" password="libera" user="cond"/>
   <packages>
     <gnrcore_sys pkgcode="gnrcore:sys"/>
     <gnrcore_adm pkgcode="gnrcore:adm"/>

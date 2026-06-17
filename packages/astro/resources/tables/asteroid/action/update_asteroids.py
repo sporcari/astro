@@ -33,8 +33,7 @@ class Main(BaseResourceAction):
             for ap_key in approaches.keys():
                 ap = approaches[ap_key]
                 self.approach_tbl.write_approach(asteroid_id=asteroid_id, ap= ap, sampled_at=self.now)
-        
-
+            #close_approach_data = self.batch_parameters['close_approach_data']
         self.db.commit()
     # ----------------------------
     # UI params (placeholder)
@@ -43,4 +42,4 @@ class Main(BaseResourceAction):
         fb = pane.formbuilder(cols=1, border_spacing='3px')
         fb.div('Confirm?')
 
-     
+    #TO ADD MORE?

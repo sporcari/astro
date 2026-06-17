@@ -22,13 +22,29 @@ class View(BaseComponent):
 
 
 class Form(BaseComponent):
+    js_requires = 'asteroidDiameter'
     def th_form(self, form):
         bc = form.center.borderContainer()
         self.asteroidData(bc.roundedGroupFrame(
             title='!!Asteroid', region='top',
             datapath='.record', height='130px'))
-        bc.contentPane(region='center', margin='2px').plainTableHandler(
+        tc = bc.tabContainer(region='center')
+        tc.contentPane(title='!!Approaches', padding='2px').plainTableHandler(
             relation='@approaches', viewResource='ViewFromAsteroid')
+        
+        # Diameter visualization tab
+        diamPane = tc.contentPane(title='!!Diameter', padding='2px')
+        diamPane.div(nodeId='asteroid_diameter_canvas',
+                     background_color="#000010",
+                     width='100%', height='100%')
+        
+        # DataController to initialize the visualization after DOM is built
+        diamPane.dataController("""
+            asteroidDiameter.init('asteroid_diameter_canvas', dmin, dmax);""",
+            dmin='^.record.diameter_min',
+            dmax='^.record.diameter_max',
+            _onBuilt=True,
+        )
 
     def asteroidData(self, pane):
         fb = pane.div(margin='10px').formbuilder(
