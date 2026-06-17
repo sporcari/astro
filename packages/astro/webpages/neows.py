@@ -7,7 +7,7 @@ from resolvers import JsonRestResolver
 
 NEOWS_BASE = 'https://api.nasa.gov/neo/rest/v1'
 
-
+#chunkTemplate
 class GnrCustomWebPage(object):
 
     def main(self, root, **kwargs):
@@ -19,9 +19,9 @@ class GnrCustomWebPage(object):
         fb = eb.formlet(datapath='.parameters', cols=4)
         fb.dateTextBox(value='^.start_date', lbl='Start Date', width='12em',
                        period_to='.end_date')
-       
+        top.templateChunk(table='ciak.progetto', record_id='^#FORM.record.id', template='asteroid', padding='5px')
         fb.horizontalSlider(value='^.period', lbl='Day shift',
-                            minimum=0, maximum=7, discreteValues=0,
+                            minimum=0, maximum=7, discreteValues=8,
                             width='75%',
                             default=0,
                             intermediateChanges=False,
@@ -67,8 +67,8 @@ class GnrCustomWebPage(object):
             start_date = start_date.strftime('%Y-%m-%d')
         if hasattr(end_date, 'strftime'):
             end_date = end_date.strftime('%Y-%m-%d')
-
-        api_key = self._get_api_key()
+        asteroid_tbl = self.db.table('astro.asteroid')
+        api_key = asteroid_tbl.get_api_key()
         resolver = JsonRestResolver(
             f'{NEOWS_BASE}/feed',
             cacheTime=300,
@@ -101,7 +101,7 @@ class GnrCustomWebPage(object):
                 i += 1
         self.db.commit()
         return result
-
+    
     def _persist_neo(self, neo, date_key):
         diameter = neo['estimated_diameter.meters']
         is_hazardous = bool(neo['is_potentially_hazardous_asteroid'])

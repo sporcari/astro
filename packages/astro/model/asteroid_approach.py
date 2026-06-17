@@ -44,14 +44,16 @@ class Table(object):
 
 
     def write_approach(self, asteroid_id=None, ap=None, sampled_at=None):
+        ap_date = ap['close_approach_date']
+        
+        if self._already_imported(asteroid_id, ap_date):
+            return
+        
         velocity = ap['relative_velocity']
         miss = ap['miss_distance']
-        ap_date = ap['close_approach_date']
         epoch = int(ap['epoch_date_close_approach']) if ap['epoch_date_close_approach'] else None
         miss_km = float(miss['kilometers']) if miss else None
         vel_kms = float(velocity['kilometers_per_second']) if velocity else None
-        if self._already_imported(asteroid_id, ap_date):
-            return
             
         self.insert(self.newrecord(
             asteroid_id=asteroid_id,

@@ -4,9 +4,7 @@
 from datetime import datetime, timezone
 from gnr.core.gnrbag import Bag
 from gnr.core.gnrdecorator import public_method
-from resolvers import JsonRestResolver
 
-NEO_LOOKUP_BASE = 'https://api.nasa.gov/neo/rest/v1/neo'
 
 
 class Table(object):
@@ -117,16 +115,6 @@ class Table(object):
                                       where='$asteroid_id=#THIS.id'),
                           dtype='B', name_long='!!Has ephemeris')
         
-
- 
-    def fetch_history(self, asteroid_id=None, neo_ref=None, **kwargs): 
-        resolver = JsonRestResolver(
-            f'{NEO_LOOKUP_BASE}/{neo_ref}',
-            cacheTime=3600,
-            api_key=self.get_api_key())
-        data = resolver()
-        return data
-
     def update_history(self, data=None, asteroid_id=None):
 
         diameter = data['estimated_diameter.meters']
